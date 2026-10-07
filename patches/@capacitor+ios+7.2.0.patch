@@ -1,0 +1,30 @@
+diff --git a/node_modules/@capacitor/ios/Capacitor/Capacitor/CapacitorBridge.swift b/node_modules/@capacitor/ios/Capacitor/Capacitor/CapacitorBridge.swift
+index e7e580b..682d6df 100644
+--- a/node_modules/@capacitor/ios/Capacitor/Capacitor/CapacitorBridge.swift
++++ b/node_modules/@capacitor/ios/Capacitor/Capacitor/CapacitorBridge.swift
+@@ -742,22 +742,11 @@ open class CapacitorBridge: NSObject, CAPBridgeProtocol {
+     }
+ 
+     @objc open func presentVC(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
+-        if viewControllerToPresent.modalPresentationStyle == .popover {
+-            self.viewController?.present(viewControllerToPresent, animated: flag, completion: completion)
+-        } else {
+-            self.tmpWindow = UIWindow.init(frame: UIScreen.main.bounds)
+-            self.tmpWindow?.rootViewController = TmpViewController.init()
+-            self.tmpWindow?.makeKeyAndVisible()
+-            self.tmpWindow?.rootViewController?.present(viewControllerToPresent, animated: flag, completion: completion)
+-        }
++        // Present from the bridge view controller (as in Capacitor 8): a scene-less UIWindow is never shown under the UIScene lifecycle
++        self.viewController?.present(viewControllerToPresent, animated: flag, completion: completion)
+     }
+ 
+     @objc open func dismissVC(animated flag: Bool, completion: (() -> Void)? = nil) {
+-        if self.tmpWindow == nil {
+-            self.viewController?.dismiss(animated: flag, completion: completion)
+-        } else {
+-            self.tmpWindow?.rootViewController?.dismiss(animated: flag, completion: completion)
+-            self.tmpWindow = nil
+-        }
++        self.viewController?.dismiss(animated: flag, completion: completion)
+     }
+ }
